@@ -1,5 +1,5 @@
 ﻿using System;
-using FTD2XX_NET;
+using FTD2XX_NET; // Подключение библиотеки FTD2XX_NET (файл FTD2XX_NET.dll) 
 
 namespace FTDI_LABs
 {

@@ -16,7 +16,31 @@ namespace FTDI_LABs
 
             string devDes = null;
 
-            data[0] = 0b11111110;
+            data[0] = 0b00000000;
+
+            Console.WriteLine("Введите коимбинацию 00, 01, 10 или 11");
+
+            switch(Console.ReadLine())
+            {
+                case "00":
+                    data[0] = 0b00000000;
+                    break;
+                case "01":
+                    data[0] = 0b01000000;
+                    break;
+                case "10":
+                    data[0] = 0b10000000;
+                    break;
+                case "11":
+                    data[0] = 0b11000000;
+                    break;
+
+                default:
+                    data[0] = 0b00000000;
+                    break;
+            }
+
+            
 
             fT_STATUS = ftdiDev0.OpenByIndex(0);
    

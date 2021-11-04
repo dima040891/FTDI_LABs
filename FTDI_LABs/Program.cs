@@ -7,19 +7,19 @@ namespace FTDI_LABs
     {
         static void Main(string[] args)
         {
-            FTDI ftdiDev0 = new FTDI();
+            FTDI ftdiDev0 = new FTDI(); // Создание объекта класаа FTDI.
             FTDI.FT_STATUS fT_STATUS = FTDI.FT_STATUS.FT_OK;
-            byte[] data = new byte[1] { 0 };
-            UInt32 numBytesWritten = 0;
 
-           UInt32 devID = 0;
+            byte[] data = new byte[1] { 0 }; // Создание массива для передачи его данных данных в FT232H
+            UInt32 numBytesWritten = 0; // Число записанных байт?
 
-            string devDes = null;
+           UInt32 devID = 0; // Переменная для хранения ID подключенной микросхемы
 
-            data[0] = 0b00000000;
+            string devDes; // Дескриптор устройсва (название)
 
             Console.WriteLine("Введите коимбинацию 00, 01, 10 или 11");
 
+            // Консольный ввод и запись полученных данных для отправку в порт FT232H
             switch(Console.ReadLine())
             {
                 case "00":
@@ -42,11 +42,21 @@ namespace FTDI_LABs
 
             
 
-            fT_STATUS = ftdiDev0.OpenByIndex(0);
+            fT_STATUS = ftdiDev0.OpenByIndex(0); // Метод открывает одно из подключенных устройств по его названию
+
+            if (fT_STATUS == FTDI.FT_STATUS.FT_OK)
+            {
+                Console.WriteLine("Устройство с индексом 0 открыта успешно");
+            }
+            else
+            {
+                Console.WriteLine($"Не удалось открыть устройство, статус: {fT_STATUS}");
+            }
    
+            // Установка режима работы микросхемы
+            fT_STATUS = ftdiDev0.SetBitMode(0xFF, FTDI.FT_BIT_MODES.FT_BIT_MODE_SYNC_BITBANG); // Маска режима работы порта?, режим работы моста (синхронный bitbang). FT_BIT_MODE_SYNC_FIFO пока не работает
 
-            fT_STATUS = ftdiDev0.SetBitMode(0xFF, FTDI.FT_BIT_MODES.FT_BIT_MODE_ASYNC_BITBANG);
-
+            // Запись данных в микросхему и вывод их в порт
             fT_STATUS = ftdiDev0.Write(data, data.Length, ref numBytesWritten);
 
             ftdiDev0.GetDeviceID(ref devID);
@@ -59,6 +69,7 @@ namespace FTDI_LABs
             {
                 Console.WriteLine("FTDI Status: Ok!");
                 Console.WriteLine($"FTDI ID: {devID}");
+                Console.WriteLine($"FTDI дескриптор: {devDes}");
             }
 
         }

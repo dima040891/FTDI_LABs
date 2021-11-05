@@ -19,30 +19,6 @@ namespace FTDI_LABs
 
             uint devNum = 0; // Количество подключенных устройсв
 
-            Console.WriteLine("Введите коимбинацию 00, 01, 10 или 11");
-
-            // Консольный ввод и запись полученных данных для отправку в порт FT232H
-            switch(Console.ReadLine())
-            {
-                case "00":
-                    data[0] = 0b00000000;
-                    break;
-                case "01":
-                    data[0] = 0b01000000;
-                    break;
-                case "10":
-                    data[0] = 0b10000000;
-                    break;
-                case "11":
-                    data[0] = 0b11000000;
-                    break;
-
-                default:
-                    data[0] = 0b00000000;
-                    break;
-            }
-            Console.WriteLine(" ");
-
             ftdiDev0.GetNumberOfDevices(ref devNum); // Получение количества обнаруженных устройств FTDI
 
             Console.WriteLine($"Количество обнаруженных USB устройств FTDI: {devNum} \n");
@@ -53,31 +29,9 @@ namespace FTDI_LABs
 
                 fT_STATUS = ftdiDev0.OpenByIndex(0); // Метод открывает одно из подключенных устройств по его названию
 
-                fT_STATUS = ftdiDev0.GetDeviceList(devList); // Заполнение нескольких списков инормацией о устрасвах
-
+                fT_STATUS = ftdiDev0.GetDeviceList(devList); // Заполнение нескольких списков инормацией о устройствах
 
                 Console.WriteLine("Информация о устройстве: ");
-
-                
-
-                //FTDI.FT232H_EEPROM_STRUCTURE ee = new FTDI.FT232H_EEPROM_STRUCTURE();
-
-                
-                
-                //ee.SerNumEnable = true;
-
-                //ee.SerialNumber = "FTDI_12345679";
-
-                
-
-                //ftdiDev0.WriteFT232HEEPROM(ee);
-
-                
-
-
-                //ftdiDev0.WriteFT232HEEPROM()
-
-
 
 
                 ftdiDev0.GetSerialNumber(out devList[0].SerialNumber);
@@ -96,25 +50,55 @@ namespace FTDI_LABs
 
                 Console.WriteLine(" ");
 
+                System.Threading.Thread.Sleep(200); // Задержка 200 мС
+
+                Console.WriteLine("Введите коимбинацию 00, 01, 10 или 11");
+
+                // Консольный ввод и запись полученных данных для отправку в порт FT232H
+                switch (Console.ReadLine())
+                {
+                    case "00":
+                        data[0] = 0b00000000;
+                        break;
+                    case "01":
+                        data[0] = 0b01000000;
+                        break;
+                    case "10":
+                        data[0] = 0b10000000;
+                        break;
+                    case "11":
+                        data[0] = 0b11000000;
+                        break;
+
+                    default:
+                        data[0] = 0b00000000;
+                        break;
+                }
+                Console.WriteLine(" ");
+
+                if (fT_STATUS == FTDI.FT_STATUS.FT_OK)
+                {
+                    Console.WriteLine("Устройство с индексом 0 открыта успешно");
+                }
+                else
+                {
+                    Console.WriteLine($"Не удалось открыть устройство, статус: {fT_STATUS}");
+                }
+
+                // Установка режима работы микросхемы
+                fT_STATUS = ftdiDev0.SetBitMode(0xFF, FTDI.FT_BIT_MODES.FT_BIT_MODE_SYNC_BITBANG); // Маска режима работы порта?, режим работы моста (синхронный bitbang). FT_BIT_MODE_SYNC_FIFO пока не работает
+
+                // Запись данных в микросхему и вывод их в порт
+                fT_STATUS = ftdiDev0.Write(data, data.Length, ref numBytesWritten);
+
+                ftdiDev0.Close();
+
             }
 
 
             
 
-            if (fT_STATUS == FTDI.FT_STATUS.FT_OK)
-            {
-                Console.WriteLine("Устройство с индексом 0 открыта успешно");
-            }
-            else
-            {
-                Console.WriteLine($"Не удалось открыть устройство, статус: {fT_STATUS}");
-            }
-   
-            // Установка режима работы микросхемы
-            fT_STATUS = ftdiDev0.SetBitMode(0xFF, FTDI.FT_BIT_MODES.FT_BIT_MODE_SYNC_BITBANG); // Маска режима работы порта?, режим работы моста (синхронный bitbang). FT_BIT_MODE_SYNC_FIFO пока не работает
 
-            // Запись данных в микросхему и вывод их в порт
-            fT_STATUS = ftdiDev0.Write(data, data.Length, ref numBytesWritten);
 
 
 

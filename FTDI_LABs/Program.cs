@@ -91,6 +91,26 @@ namespace FTDI_LABs
                 // Запись данных в микросхему и вывод их в порт
                 fT_STATUS = ftdiDev0.Write(data, data.Length, ref numBytesWritten);
 
+                //FTDI.FT232H_EEPROM_STRUCTURE eeprom00 = new FTDI.FT232H_EEPROM_STRUCTURE();
+
+                byte[] eedata_w = new byte[4] { 0, 10, 20, 30 };
+
+                byte[] eedata_r = new byte[4] { 0, 0, 0, 0 };
+
+                uint rr = 4;
+
+                fT_STATUS = ftdiDev0.EEWriteUserArea(eedata_w);
+
+                fT_STATUS = ftdiDev0.EEReadUserArea(eedata_r, ref rr);
+
+                Console.WriteLine($"Попытка чтения в EERPROM: {fT_STATUS}");
+
+                Console.WriteLine($"Занчяние [0]: {eedata_r[0]}");
+                Console.WriteLine($"Занчяние [1]: {eedata_r[1]}");
+                Console.WriteLine($"Занчяние [2]: {eedata_r[2]}");
+                Console.WriteLine($"Занчяние [3]: {eedata_r[3]}");
+
+
                 ftdiDev0.Close();
 
             }
